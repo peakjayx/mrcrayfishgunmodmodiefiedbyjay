@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "cgm:glock19"},
+    {"item": "cgm:magazin"}
+  ],
+  "result": {
+    "item": "cgm:glock19_largemag",
+    "count": 1
+  }
+}

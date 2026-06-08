@@ -1,0 +1,2 @@
+com/mrcrayfish/guns/mixin/client/GameRendererMixin fov field_78507_R
+com/mrcrayfish/guns/mixin/client/GameRendererMixin oldFov field_78506_S

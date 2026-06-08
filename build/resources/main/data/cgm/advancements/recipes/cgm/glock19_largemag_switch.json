@@ -1,0 +1,19 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": ["cgm:glock19_largemag_switch"]
+  },
+  "criteria": {
+    "has_magazin": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{"item": "cgm:magazin"}]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {"recipe": "cgm:glock19_largemag_switch"}
+    }
+  },
+  "requirements": [["has_magazin", "has_the_recipe"]]
+}

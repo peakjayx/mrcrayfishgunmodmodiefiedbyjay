@@ -1,0 +1,60 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="GPL3"
+
+[[mods]]
+modId="cgm"
+version="1.2.6"
+displayName="MrCrayfish's Gun Mod"
+updateJSONURL="https://raw.githubusercontent.com/MrCrayfish/ModUpdates/master/cgm/update.json"
+displayURL="https://mrcrayfish.com/"
+logoFile="cgm_banner.png"
+authors="MrCrayfish"
+description="MrCrayfish's Gun Mod adds in simple and straight forward weapons into Minecraft. They can be configured with many different attachments to add extra stats to your weapon and coloured to your personal liking. This mod adds ten weapons into the game!"
+
+[[dependencies.cgm]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.cgm]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.5,1.17)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.cgm]]
+    modId="obfuscate"
+    mandatory=true
+    versionRange="[0.6.2,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.cgm]]
+    modId="controllable"
+    mandatory=false
+    versionRange="[0.14.1,)"
+    ordering="AFTER"
+    side="CLIENT"
+[[dependencies.cgm]]
+    modId="backpacked"
+    mandatory=false
+    versionRange="[2.0.0,)"
+    ordering="AFTER"
+    side="CLIENT"
+[[dependencies.cgm]]
+    modId="ryoamiclights"
+    mandatory=false
+    versionRange="[0.1,)"
+    ordering="NONE"
+    side="CLIENT"
+[[dependencies.cgm]]
+    modId="additionalguns"
+    mandatory=true
+    versionRange="[0.1,)"
+    ordering="BEFORE"
+    side="BOTH"
+
+[modproperties.cgm]
+    catalogueImageIcon="cgm_icon.png"
+    configuredBackground="minecraft:textures/block/stone_bricks.png"

@@ -1,0 +1,62 @@
+{
+  "general": {
+    "rate": 2,
+    "gripType": "cgm:one_handed",
+    "maxAmmo": 15,
+    "reloadAmount": 5,
+    "recoilAngle": 2.0,
+    "recoilKick": 1.5,
+    "recoilAdsReduction": 0.5,
+    "alwaysSpread": true,
+    "spread": 5.0
+  },
+  "projectile": {
+    "item": "additionalguns:bullet_small",
+    "visible": false,
+    "damage": 8,
+    "size": 0.1,
+    "speed": 10.0,
+    "life": 20
+  },
+  "sounds": {
+    "fire": "cgm:item.glock19.fire",
+    "reload": "cgm:item.pistol.reload",
+    "cock": "cgm:item.pistol.cock",
+    "silencedFire": "cgm:item.glock19.suppression",
+    "enchantedFire": "cgm:item.pistol.enchanted_fire"
+  },
+  "display": {
+    "flash": {
+      "yOffset": 3.6,
+      "zOffset": -2.0
+    }
+  },
+  "modules": {
+    "zoom": {
+      "fovModifier": 0.7,
+      "yOffset": 4.5,
+      "zOffset": 2.0
+    },
+    "attachments": {
+      "barrel": {
+        "yOffset": 3.6,
+        "zOffset": 0.0,
+        "scale": 0.5
+      },
+      "underBarrel": {
+        "yOffset": 3.0,
+        "zOffset": 0.0
+      },
+      "sideLeft": {
+        "xOffset": -0.8,
+        "yOffset": 3.6,
+        "zOffset": 4.0
+      },
+      "sideRight": {
+        "xOffset": 0.8,
+        "yOffset": 3.6,
+        "zOffset": 4.0
+      }
+    }
+  }
+}
