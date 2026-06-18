@@ -1,6 +1,7 @@
 package com.mrcrayfish.guns.init;
 
 import com.mrcrayfish.guns.Reference;
+import com.mrcrayfish.guns.tileentity.EvidenceTileEntity;
 import com.mrcrayfish.guns.tileentity.WorkbenchTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -19,6 +20,8 @@ public class ModTileEntities
     public static final DeferredRegister<TileEntityType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Reference.MOD_ID);
 
     public static final RegistryObject<TileEntityType<WorkbenchTileEntity>> WORKBENCH = register("workbench", WorkbenchTileEntity::new, () -> new Block[]{ModBlocks.WORKBENCH.get()});
+
+    public static final RegistryObject<TileEntityType<EvidenceTileEntity>> EVIDENCE = register("evidence", EvidenceTileEntity::new, () -> new Block[]{ModBlocks.EVIDENCE.get()});
 
     private static <T extends TileEntity> RegistryObject<TileEntityType<T>> register(String id, Supplier<T> factoryIn, Supplier<Block[]> validBlocksSupplier)
     {

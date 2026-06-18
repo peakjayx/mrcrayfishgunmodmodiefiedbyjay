@@ -159,5 +159,7 @@
     "cgm.button.attachments": "Modify Attachments",
     "cgm.button.steadyAim": "Steady Aim",
     "cgm.category.workbench.title": "Assembling",
-    "cgm.category.workbench.materials": "Materials"
+    "cgm.category.workbench.materials": "Materials",
+    "block.cgm.evidence": "Bullet Casing",
+    "info.cgm.gun_id": "ID: %s"
 }

@@ -1,0 +1,22 @@
+{
+    "comment": "Platzhalter — ersetze mit eigenem Modell. AABB: x[4-12] y[0-2] z[4-12]",
+    "parent": "minecraft:block/thin_block",
+    "textures": {
+        "texture": "minecraft:block/sand",
+        "particle": "minecraft:block/sand"
+    },
+    "elements": [
+        {
+            "from": [4, 0, 4],
+            "to":   [12, 2, 12],
+            "faces": {
+                "down":  { "texture": "#texture", "cullface": "down" },
+                "up":    { "texture": "#texture" },
+                "north": { "texture": "#texture" },
+                "south": { "texture": "#texture" },
+                "west":  { "texture": "#texture" },
+                "east":  { "texture": "#texture" }
+            }
+        }
+    ]
+}

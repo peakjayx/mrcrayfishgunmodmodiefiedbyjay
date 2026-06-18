@@ -2,6 +2,7 @@ package com.mrcrayfish.guns.init;
 
 import com.mrcrayfish.guns.GunMod;
 import com.mrcrayfish.guns.Reference;
+import com.mrcrayfish.guns.block.EvidenceBlock;
 import com.mrcrayfish.guns.block.WorkbenchBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -23,6 +24,9 @@ public class ModBlocks
     public static final DeferredRegister<Block> REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, Reference.MOD_ID);
 
     public static final RegistryObject<Block> WORKBENCH = register("workbench", () -> new WorkbenchBlock(Block.Properties.of(Material.METAL).strength(1.5F)));
+
+    // kein BlockItem — nur programmatisch platziert
+    public static final RegistryObject<Block> EVIDENCE = register("evidence", EvidenceBlock::new, null);
 
     private static <T extends Block> RegistryObject<T> register(String id, Supplier<T> blockSupplier)
     {

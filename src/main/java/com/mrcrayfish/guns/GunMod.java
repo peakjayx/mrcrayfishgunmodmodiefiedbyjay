@@ -7,6 +7,8 @@ import com.mrcrayfish.guns.common.BoundingBoxManager;
 import com.mrcrayfish.guns.common.GunDebugCommand;
 import com.mrcrayfish.guns.common.KillEffectCommand;
 import com.mrcrayfish.guns.common.KillHandler;
+import com.mrcrayfish.guns.event.GunIdHandler;
+import com.mrcrayfish.guns.event.GunTooltipHandler;
 import com.mrcrayfish.guns.event.HelmEventHandler;
 import com.mrcrayfish.guns.capability.VestCapability;
 import com.mrcrayfish.guns.event.ShieldHandler;
@@ -109,6 +111,7 @@ public class GunMod
             MinecraftForge.EVENT_BUS.register(new ShieldHandler());
             MinecraftForge.EVENT_BUS.register(new VestEventHandler());
             MinecraftForge.EVENT_BUS.register(new HelmEventHandler());
+            MinecraftForge.EVENT_BUS.register(new GunIdHandler());
 
             if(Config.COMMON.gameplay.improvedHitboxes.get())
             {
@@ -126,6 +129,7 @@ public class GunMod
     private void onClientSetup(FMLClientSetupEvent event)
     {
         ClientHandler.setup();
+        MinecraftForge.EVENT_BUS.register(new GunTooltipHandler());
         event.enqueueWork(() ->
         {
             ClientHandler.registerVestLayer();

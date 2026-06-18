@@ -84,9 +84,12 @@ Client-seitige Renderer, Handler und UI.
 Forge-Event-Handler.
 
 - **`ShieldHandler.java`** - `LivingHurtEvent`: blockiert frontale Treffer mit `CgmShieldItem`, spielt Shield-Block-Sound, beschädigt Schild-Durability
-- **`VestEventHandler.java`** ★ NEU - Capability-Attach, Clone (Respawn), Login/Dimension-Sync (`TRACKING_ENTITY_AND_SELF`), `StartTracking`-Sync, Schadensminderung (Zivi 20%, PD 30%, SWAT 40%, CID 30%)
-- **`KillHandler.java`** - Kill-Detection und Kill-Effekte
-- **`HelmEventHandler.java`** ★ NEU - `PotionApplicableEvent`: blockt Blindness (vanilla + cgm:blinded) wenn Visier unten
+- **`VestEventHandler.java`** - Capability-Attach, Clone (Respawn), Login/Dimension-Sync, Schadensminderung
+- **`KillHandler.java`** - Kill-Detection, Kill-Effekte + `placeEvidence()`: EvidenceBlock + GunKillEvent bei Waffen-Kill ★ NEU
+- **`HelmEventHandler.java`** - `PotionApplicableEvent`: blockt Blindness wenn Visier unten
+- **`GunIdHandler.java`** ★ NEU - `PlayerTickEvent` (alle 20 Ticks): scannt Inventar, vergibt zufällige 12-stellige ID an Waffen ohne ID, bindet ersten Besitzer in `GunRegistry`
+- **`GunTooltipHandler.java`** ★ NEU - `ItemTooltipEvent`: hängt "ID: ############" an Waffen-Tooltip (client-only)
+- **`GunKillEvent.java`** ★ NEU - Forge-Event: `{world, evidencePos, victim, shooter, weapon, EvidenceData}` — für Metropolia konsumierbar
 
 ### Item (`com.mrcrayfish.guns.item`)
 - **`SwatHelmItem.java`** ★ NEU - Helm-Item (HEAD-Slot), statische Helpers `isNvActive/isVisierDown/getHelmState`; NBT-Keys `nv` + `visier`
@@ -108,15 +111,21 @@ Forge-Event-Handler.
 - **`message/MessageToggleThermal.java`** ★ NEU - C→S: Thermal-Toggle-Request (Server prüft Allowed-Liste)
 - **`message/MessageSyncThermal.java`** ★ NEU - S→C: synct `thermal` NBT zum Client
 
+### Common (`com.mrcrayfish.guns.common`) — Ergänzungen ★ NEU
+- **`GunRegistry.java`** - `WorldSavedData` (`cgm_gun_registry`): Map `gunId → OwnerInfo`, persistent in Overworld-DataStorage; `assignNewId()` zufällig 12-stellig; `bindOwner()` schreibt nur beim ersten Mal (Besitzer fest)
+
 ### Command (`com.mrcrayfish.guns.command`)
-- **`ThermalModeCommand.java`** ★ NEU - `/thermalmode allow/disallow/list` (OP) + `enable/disable` (player)
+- **`ThermalModeCommand.java`** - `/thermalmode allow/disallow/list` (OP) + `enable/disable` (player)
 
 ### API (`com.mrcrayfish.guns.api`) ★ NEU
-Hook-Interfaces für externe Mods.
+Hook-Interfaces + Datenklassen + Facade für externe Mods.
 
 - **`IProtectiveVest.java`** - `float getProtection()` — jedes Item das in den Vest-Slot passt und Schutz gewährt
 - **`ICgmShield.java`** - `boolean isFrontalHit(LivingEntity, x, z)` — jedes Item das Shield-Blocking nutzen will
 - **`IHelm.java`** - Default-Methoden `isNvActive/isVisierDown/isThermalActive/getHelmState/set*` via NBT-Keys; externe Helme implementieren dieses Interface
+- **`OwnerInfo.java`** ★ NEU - Immutable `{uuid, name, firstSeenEpoch}` — erster Waffenbesitzer
+- **`EvidenceData.java`** ★ NEU - Immutable Spurendaten `{gunId, gunType, ammoType, shooterUuid, shooterName, victimUuid, victimName, epoch}` + `writeNbt/readNbt`
+- **`CgmGunApi.java`** ★ NEU - Statische Facade: `isGun/getGunId/getGunType/getAmmoType/getOwner(world,id)/getEvidence(world,pos)` — für Metropolia Mod als `compileOnly` konsumierbar
 
 ### Init (`com.mrcrayfish.guns.init`)
 - **`ModItems.java`** - Alle Items inkl. `SWAT_HELM`, `VEST_ZIVI/PD/SWAT/CID` (jetzt mit Protection-Wert im Konstruktor), `GLOCK19`, `GLOCK19_SWITCH`, `GUN_SWITCH`, `CGM_SHIELD`
@@ -316,4 +325,24 @@ API-kompatibel: weitere Mods können `ISideMount`/`SideMountItem` nutzen.
 **Flashbang-Schutz** (Session 4):
 - `HelmEventHandler.onPotionApplicable` blockt Blindness (vanilla + cgm:blinded) wenn Visier unten
 
-*Zuletzt aktualisiert: 2026-06-07 (Session 4)*
+## Waffen-ID-System ★ NEU (Session 5)
+
+| Feature | Klasse | Beschreibung |
+|---------|--------|--------------|
+| ID-Vergabe | `GunIdHandler` | PlayerTick alle 20T, Inventar-Scan, zufällige 12-stellige ID per Waffe |
+| Persistenz | `GunRegistry` | WorldSavedData, Overworld-DataStorage, Besitzer fix beim ersten Eintrag |
+| Tooltip | `GunTooltipHandler` | "ID: ############" unter Munition-Info (alle GunItem-Subklassen) |
+| Beweis-Block | `EvidenceBlock` + `EvidenceTileEntity` | Kollisionslos, kein Item, platziert bei Kill mit Spurendaten |
+| API/Events | `CgmGunApi` + `GunKillEvent` | Metropolia bindet cgm als compileOnly, liest `getEvidence/getOwner` |
+
+**Datenfluss:**
+1. Waffe → Inventar → `GunIdHandler` → NBT-ID + `GunRegistry.bindOwner` (erster Besitzer fix)
+2. Tooltip: `ItemTooltipEvent` → ID sichtbar unter Munition
+3. Kill → `KillHandler.placeEvidence()` → `EvidenceBlock` am Todesort → `GunKillEvent` gefeuert
+4. Metropolia: `CgmGunApi.getEvidence(world, pos)` + `getOwner(world, gunId)` → Bericht
+
+**EvidenceBlock-Assets:**
+- `blockstates/evidence.json` → Modell `cgm:block/evidence`
+- `models/block/evidence.json` — **PLATZHALTER** (Sand-Textur, 4×2×4 Box) → User ersetzt mit eigenem Modell
+
+*Zuletzt aktualisiert: 2026-06-18 (Session 5)*
