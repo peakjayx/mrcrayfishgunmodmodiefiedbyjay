@@ -2,8 +2,8 @@
   "format_version": "1.9.0",
   "credit": "Made with Blockbench",
   "textures": {
-    "0": "block/evidence",
-    "particle": "block/evidence"
+    "0": "cgm:block/evidence",
+    "particle": "cgm:block/evidence"
   },
   "elements": [
     {
