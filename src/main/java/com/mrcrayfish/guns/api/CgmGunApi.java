@@ -56,8 +56,19 @@ public final class CgmGunApi
         return GunRegistry.get(world).getOwner(gunId);
     }
 
+    /** Compat: erstes Entry (Metropolia 2.x erwartet EvidenceData) */
     @Nullable
-    public static List<EvidenceData> getEvidence(IBlockReader world, BlockPos pos)
+    public static EvidenceData getEvidence(IBlockReader world, BlockPos pos)
+    {
+        TileEntity te = world.getBlockEntity(pos);
+        if(!(te instanceof EvidenceTileEntity)) return null;
+        List<EvidenceData> list = ((EvidenceTileEntity) te).getEntries();
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    /** alle gestapelten Hülsen an dieser Position */
+    @Nullable
+    public static List<EvidenceData> getEvidenceList(IBlockReader world, BlockPos pos)
     {
         TileEntity te = world.getBlockEntity(pos);
         if(te instanceof EvidenceTileEntity)
