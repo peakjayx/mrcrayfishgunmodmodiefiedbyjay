@@ -1,5 +1,6 @@
 {
     "variants": {
-        "": { "model": "cgm:block/evidence" }
+        "waterlogged=false": { "model": "cgm:block/evidence" },
+        "waterlogged=true":  { "model": "cgm:block/evidence" }
     }
 }

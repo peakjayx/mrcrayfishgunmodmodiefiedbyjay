@@ -4,18 +4,22 @@ import com.mrcrayfish.guns.api.EvidenceData;
 import com.mrcrayfish.guns.init.ModTileEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /** Spurendaten am Tatort */
 public class EvidenceTileEntity extends SyncedTileEntity
     implements ITickableTileEntity
 {
-    private static final long EXPIRE_MS = 6L * 60 * 60 * 1000; // 6h
+    private static final long EXPIRE_MS = 6L * 60 * 60 * 1000;
 
-    @Nullable
-    private EvidenceData data;
+    private final List<EvidenceData> entries = new ArrayList<>();
     private int tickCounter = 0;
 
     public EvidenceTileEntity()
@@ -23,36 +27,59 @@ public class EvidenceTileEntity extends SyncedTileEntity
         super(ModTileEntities.EVIDENCE.get());
     }
 
-    @Nullable
-    public EvidenceData getData() { return data; }
-
-    public void setData(EvidenceData data)
+    public List<EvidenceData> getEntries()
     {
-        this.data = data;
+        return Collections.unmodifiableList(entries);
+    }
+
+    public void addEntry(EvidenceData data)
+    {
+        entries.add(data);
+        setChanged();
         syncToClient();
+    }
+
+    /** erstes Entry entfernen; Block wird entfernt wenn Liste leer */
+    @Nullable
+    public EvidenceData pollEntry()
+    {
+        if(entries.isEmpty()) return null;
+        EvidenceData d = entries.remove(0);
+        setChanged();
+        if(entries.isEmpty() && level != null)
+        {
+            level.removeBlock(worldPosition, false);
+            return d;
+        }
+        syncToClient();
+        return d;
     }
 
     @Override
     public void tick()
     {
         if(level == null || level.isClientSide()) return;
-        if(++tickCounter < 1200) return; // alle 60s prüfen
+        if(++tickCounter < 1200) return;
         tickCounter = 0;
 
-        if(data == null) return;
-        if(System.currentTimeMillis() - data.epoch >= EXPIRE_MS)
+        long now = System.currentTimeMillis();
+        boolean changed = entries.removeIf(e -> now - e.epoch >= EXPIRE_MS);
+        if(entries.isEmpty())
             level.removeBlock(worldPosition, false);
+        else if(changed)
+        {
+            setChanged();
+            syncToClient();
+        }
     }
 
     @Override
     public CompoundNBT save(CompoundNBT tag)
     {
-        if(data != null)
-        {
-            CompoundNBT sub = new CompoundNBT();
-            data.writeNbt(sub);
-            tag.put("evidence", sub);
-        }
+        ListNBT list = new ListNBT();
+        for(EvidenceData e : entries)
+            list.add(e.writeNbt(new CompoundNBT()));
+        tag.put("entries", list);
         return super.save(tag);
     }
 
@@ -60,9 +87,9 @@ public class EvidenceTileEntity extends SyncedTileEntity
     public void load(BlockState state, CompoundNBT tag)
     {
         super.load(state, tag);
-        if(tag.contains("evidence"))
-            data = EvidenceData.readNbt(tag.getCompound("evidence"));
-        else
-            data = null;
+        entries.clear();
+        ListNBT list = tag.getList("entries", Constants.NBT.TAG_COMPOUND);
+        for(int i = 0; i < list.size(); i++)
+            entries.add(EvidenceData.readNbt(list.getCompound(i)));
     }
 }

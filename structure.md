@@ -332,17 +332,21 @@ API-kompatibel: weitere Mods können `ISideMount`/`SideMountItem` nutzen.
 | ID-Vergabe | `GunIdHandler` | PlayerTick alle 20T, Inventar-Scan, zufällige 12-stellige ID per Waffe |
 | Persistenz | `GunRegistry` | WorldSavedData, Overworld-DataStorage, Besitzer fix beim ersten Eintrag |
 | Tooltip | `GunTooltipHandler` | "ID: ############" unter Munition-Info (alle GunItem-Subklassen) |
-| Beweis-Block | `EvidenceBlock` + `EvidenceTileEntity` | Kollisionslos, kein Item, platziert bei Kill mit Spurendaten |
+| Beweis-Block | `EvidenceBlock` + `EvidenceTileEntity` | Kollisionslos, IWaterLoggable, kein Item; platziert nur bei Spieler-Tod |
+| Stacking | `EvidenceTileEntity.addEntry/pollEntry` | Mehrere Tode an gleicher Stelle → Liste; jede Hülse einzeln sammelbar |
 | API/Events | `CgmGunApi` + `GunKillEvent` | Metropolia bindet cgm als compileOnly, liest `getEvidence/getOwner` |
 
 **Datenfluss:**
 1. Waffe → Inventar → `GunIdHandler` → NBT-ID + `GunRegistry.bindOwner` (erster Besitzer fix)
 2. Tooltip: `ItemTooltipEvent` → ID sichtbar unter Munition
-3. Kill → `KillHandler.placeEvidence()` → `EvidenceBlock` am Todesort → `GunKillEvent` gefeuert
-4. Metropolia: `CgmGunApi.getEvidence(world, pos)` + `getOwner(world, gunId)` → Bericht
+3. Spieler-Kill → `KillHandler.placeEvidence()` → `EvidenceBlock` am Todesort (waterlogged wenn Unterwasser, Stack wenn selbe Pos) → `GunKillEvent` gefeuert
+4. Metropolia: `CgmGunApi.getEvidence(world, pos)` → `List<EvidenceData>` + `pollEntry()` zum Einsammeln
 
-**EvidenceBlock-Assets:**
-- `blockstates/evidence.json` → Modell `cgm:block/evidence`
-- `models/block/evidence.json` — **PLATZHALTER** (Sand-Textur, 4×2×4 Box) → User ersetzt mit eigenem Modell
+**EvidenceBlock-Verhalten:**
+- Nur bei Spieler-Kill (keine Mobs)
+- `WATERLOGGED=true` wenn Todesort unter Wasser
+- Mehrere Hülsen an gleicher Stelle → `entries`-Liste in der TE; `pollEntry()` entfernt erste
+- Block wird automatisch entfernt wenn Liste leer (alle gesammelt oder alle 6h-expired)
+- `blockstates/evidence.json` → beide Waterlogged-Varianten → gleiche `cgm:block/evidence`
 
-*Zuletzt aktualisiert: 2026-06-18 (Session 5)*
+*Zuletzt aktualisiert: 2026-06-19 (Session 6)*

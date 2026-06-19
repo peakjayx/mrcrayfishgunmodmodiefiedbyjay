@@ -12,6 +12,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /** öffentliche API für Metropolia & Co. */
 public final class CgmGunApi
@@ -56,11 +57,11 @@ public final class CgmGunApi
     }
 
     @Nullable
-    public static EvidenceData getEvidence(IBlockReader world, BlockPos pos)
+    public static List<EvidenceData> getEvidence(IBlockReader world, BlockPos pos)
     {
         TileEntity te = world.getBlockEntity(pos);
         if(te instanceof EvidenceTileEntity)
-            return ((EvidenceTileEntity) te).getData();
+            return ((EvidenceTileEntity) te).getEntries();
         return null;
     }
 }
